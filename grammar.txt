@@ -1,0 +1,169 @@
+S
+	ws program ws
+
+program
+	stmt
+	stmt ws program
+
+stmt
+	network
+	instruction
+
+instruction
+	input
+	output
+	run
+
+neuron
+	name ws neuron_def
+
+neuron_def
+	'{' neuron_properties '}'
+
+neuron_properties
+	neuron_property
+	neuron_property ',' neuron_properties
+
+neuron_property
+	ws property_definition ws
+
+property_definition
+	prop_input
+	prop_output
+	prop_bias
+	prop_activation
+
+prop_input
+	"input" ws ':' ws connection_list
+
+prop_output
+	"output" ws ':' ws output_list
+
+prop_bias
+	"bias" ws ':' ws number
+
+prop_activation
+	"activation" ws ':' ws activation_function
+
+input_list
+	'[' input_list_elements ']'
+
+input_list_elements
+	connection
+	connection ',' input_list_elements
+
+connection
+	name ws ':' ws number
+
+output_list
+	'[' output_list_elements ']'
+
+output_list_elements
+	name
+	name ',' output_list_elements
+
+activation_function
+	"sigmoid"
+	"identity"
+	"binary"
+
+layer_elements
+	layer_element
+	layer_element ',' layer_elements
+
+layer_element
+	neuron
+	network
+
+layer
+	name ws layer_def
+
+layer_def
+	'[' layer_elements ']'
+
+networks
+	network
+	network ',' networks
+
+layers
+	layer
+	layer ',' layers
+
+network
+	name ws network_def
+
+network_def
+	'(' network_content ')'
+
+network_content
+	network ',' networks
+	layer ',' layers
+
+input
+	name ws '=' ws number
+
+output
+	'>' ws ouput_value
+
+ouput_value
+	name
+	"all"
+
+run
+	'-' '>' ws name
+
+
+
+
+
+name
+	A-Z chars
+
+chars
+	char chars
+	""
+
+char
+	a-z
+	A-Z
+	0-9
+
+number
+	integer fraction exponent
+
+integer
+	digit
+	nonzero_digit digits
+	'-' digit
+	'-' nonzero_digit digits
+
+digits
+	digit
+	digit digits
+
+digit
+	'0'
+	nonzero_digit
+
+nonzero_digit
+	1-9
+
+fraction
+	""
+	'.' digits
+
+exponent
+	""
+	'E' sign digits
+	'e' sign digits
+
+sign
+	""
+	'+'
+	'-'
+
+ws
+	""
+	' ' ws
+	'\n' ws
+	'\t' ws

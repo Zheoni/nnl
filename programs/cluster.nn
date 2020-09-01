@@ -1,0 +1,54 @@
+R (
+    InputLayer [
+        Input1 {
+            input: [InputA: 1],
+            output: [N11, N12, N1C1]
+        },
+        Input2 {
+            input: [InputB: 1],
+            output: [N11, N12, N1C1]
+        }
+    ],
+    HiddenLayer [
+        N11 {
+            input: [Input1: 0.25, Input2: 3.14],
+            output: [N3]
+        },
+        N12 {
+            input: [Input1: 0.9, Input2: 1],
+            output: [N3]
+        },
+        C1 (
+            L1C1 [
+                N1C1 {
+                    input: [Input1: 0.5, Input2: 0.5],
+                    output: [N21C1, N22C1]
+                }
+            ],
+            L21C1 [
+                N21C1 {
+                    input: [N1C1: 1.45e2],
+                    output: [N3],
+                    activation: sigmoid
+                },
+                N22C1 {
+                    bias: 1,
+                    input: [N1C1: 1],
+                    output: [N3],
+                    activation: binary
+                }
+            ]
+        )
+    ],
+    OutputLayer [
+        N3 {
+            input: [N11: 1, N12: 1, N21C1: 1, N22C1: 1],
+            output: [Output]
+        }
+    ]
+)
+
+InputA=2
+InputB=3.14
+
+-> R

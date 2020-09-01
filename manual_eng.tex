@@ -1,0 +1,251 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm]{geometry}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+
+\tcbuselibrary{listings}
+
+\definecolor{codecolor}{gray}{0.8}
+\newtcbox{\inlinecodebox}{on line,boxsep=0pt,left=4pt,right=4pt,top=2.5pt,bottom=2.5pt,boxrule=0.5pt,arc=1pt,colframe=codecolor,colback=codecolor!10!white}
+\newcommand{\code}[1]{\inlinecodebox{\texttt{#1}}}
+\newtcblisting{codebox}{listing only,listing options={language=nn},boxsep=5pt,left=4pt,right=4pt,top=0pt,bottom=0pt,boxrule=0.5pt,arc=1pt,colframe=codecolor,colback=codecolor!10!white}
+
+\lstdefinelanguage{nn}{
+    numbers=none,
+    frame=none,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    % breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+	tabsize=2,
+    basicstyle=\ttfamily\small,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{string},
+    literate=
+      *{\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+	  {)}{{{\color{delim}{)}}}}{1}
+	  {(}{{{\color{delim}{(}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1}
+	  {=}{{{\color{delim}{=}}}}{1}
+	  {->}{{{\color{delim}{->}}}}{1}
+    {>}{{{\color{delim}>}}}{1},
+	morekeywords={*,input,output,bias,activation},
+	keywordstyle=\color{eclipseKeywords}
+}
+
+\definecolor{eclipseStrings}{RGB}{42,255,255}
+\definecolor{eclipseKeywords}{RGB}{127,0,85}
+\colorlet{numb}{magenta!60!black}
+
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{106, 109, 32}
+\definecolor{string}{rgb}{0.64,0.08,0.08}
+
+\title{NN User Manual\\
+\large Version 1}
+\author{Francisco J. Sánchez}
+\date{September 2020}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section*{About this manual}
+In the examples and explanations of code in this manual, the ellipsis indicated by ``...'' will be used to indicate that something is missing in that part for the program to be valid, but that it does not affect the explanation of the code fragment it is explaining.
+
+This manual does not explain what a neural networks is or how it works.
+
+\section{Program structure}
+A NN program is a neural network and instructions give input values   to the networks, select outputs and, based on all of the above, calculate the results. In principle, it is stored in a text file.
+
+The order and position of the networks in the program does not matter, they are global in scope. The instructions are executed in the order that they appear.
+
+This manual attempts to format the code so that it is easily readable and understandable, but any indents, spacing, or line breaks are optional and have no effect on the program.
+
+\section{Elements}
+The elements are networks, layers, and neurons. Combining them you can create neural networks.
+
+Each element has a unique name and therefore cannot be repeated throughout the program. The names will be a set of letters from `a' to `z' (without accents or `ñ') and numbers with the first character being a capital letter. \label{nombres}
+
+\subsection{Networks}
+Networks connect layers or other networks one after another, in the order in which they are defined within. They can be defined directly in the program, within another network or within a layer. They connect layers or networks, you cannot mix. They must contain a minimum of two elements.
+
+The way to define a network is with its name followed by the definitions of the elements it connects in parentheses separated by commas.
+
+The outputs of the network will be the outputs of the last element defined in it.
+
+\begin{codebox}
+R (
+	Element1 ...,
+	Element2 ...,
+	...
+	ElementN ...
+)
+\end{codebox}
+
+In this network, ``Element1'' will be executed, its outputs are connected to ``Element2'' (as explained in \ref{neuronas}) which is executed afterwards and continues in this way, in the order that they are defined, until ``ElementN''. In this example, the network outputs are the outputs of ``ElementN''.
+
+\subsection{Layers}
+Layers connect networks or neurons within other networks. They have to be defined within a network. There cannot be connections between the elements of a layer themselves, these must be with the elements of the previous layer (as inputs) or the next layer (as outputs). They must contain a minimum of one element.
+
+The way to define a layer is with its name followed by the definitions of the elements it contains between brackets separated by commas.
+
+The outputs of the layer will be the union of all the outputs of the elements defined in it.
+
+\begin{codebox}
+...
+C [
+	Element1 ...,
+	Element2 ...,
+	...
+	ElementN ...
+]
+...
+\end{codebox}
+
+In this layer, all the elements will be executed, from ``Element1'' to ``ElementN'', in a ``parallel'' way \footnote{The execution is technically sequence one after another in the order indicated, but since the outputs cannot have connections with none of the inputs of the layer, in a practical way for the user, it is as if it were executed in parallel.}. The set of outputs of the layer is the union of all the outputs of ``Element1'', ``Element2'', up to ``ElementN''.
+
+\subsection{Neurons} \label{neuronas}
+Neurons are the ones that perform the calculations in the neural network. They have to be defined within a layer. They consist of one or more inputs, one or more outputs (in the sense of where the resulting value goes), a value from \textit{bias}, and a trigger function.
+
+The way to define a neuron is with its name followed by the properties between braces separated by commas. Properties are defined with the property name (always lowercase), a colon, and the property value. The order in which the properties are listed does not affect.
+
+As has been said there are four properties, which are:
+\begin{itemize}
+\item \texttt{input}: Required. Define the inputs of the neuron. Its value with connections between brackets separated by commas, at least one. A connection is the name of the neuron from which to take the output, a colon and the weight by which to multiply that output. Weight is a real number with scientific notation if desired.
+
+\item \texttt{output}: Required. Defines the neurons to which the neuron's output value will go. Its value is the names of the target neurons in brackets separated by commas, at least one.
+
+\item \texttt{bias}: Optional. Indicates the value of \textit{bias} of the neuron. The value is a real number with scientific notation if desired. If this property is not indicated, it will take as value 0.
+
+\item \texttt{activation}: Optional. Indicates the activation function that will be applied to the calculation of the neuron output. It must be the name of one of the functions that the language implements, currently:
+\begin{itemize}
+\item \texttt{identity}
+\item \texttt{sigmoid}
+\item \texttt{binary}
+\end{itemize}
+If not indicated, it will take as value \texttt{identity}.
+\end{itemize}
+
+The connections defined by \texttt{input} and \texttt{output} must be logical and valid. If a neuron A has in its \texttt{input} another neuron B, B must have in \texttt{output} A. A and B must be ``adjacent'' to each other, there can be no layers between the two. They cannot be on the same layer. A has to appear after B in the network.
+
+\begin{codebox}
+...
+N {
+	input: [Input1: 1, Input2: 1.3e-1],
+	output: [Output1, Output2, Output3],
+	bias: -0.14,
+	activation: sigmoid
+}
+...
+\end{codebox}
+
+In this example, neuron ``N'' is defined with input from neuron ``Input1'' with weight 1 and from ``Input2'' with weight $1.3e-1$ (= $0.13$); whose output value will go to the neurons ``Output1'', ``Output2'' and ``Output3''; -0.14 bias and sigmoid activation function.
+
+\subsubsection{Exceptions in the input and output properties}
+The first neurons of the main network (one that is indicated directly in the program, not inside any element), in the input layer of the network, obviously there are no other neurons from which to take input. Therefore, in property \texttt{input}, instead of the name of another neuron, the name of an input variable is indicated. Furthermore, in this layer, neurons can only have one input (one of the input values). These input variables are indicated in the appropriate instruction (\ref{entradas}) and can only be used in these neurons. If an input variable is used that is not indicated by an instruction, it will be undefined and therefore invalid.
+
+The last neurons of the main network, in the output layer, obviously there are no other neurons to take the output to, therefore we have to save it in a variable (explained in \ref{variables}), which in a way, can be understood how to name the output of the network.
+
+\subsubsection{Variables} \label{variables}
+In the properties of \texttt{input} and \texttt{output} of neurons, in addition to other neurons, variables can also appear. Variables have the same naming rules as elements (\ref{nombres}).
+
+In the property of \texttt{output} if a name other than any element appears, the output of that neuron will be assigned to the variable. This variable can now be used as an input to another neuron (fulfilling the same valid and logical connection rules that exist between neurons) or an internal output (\ref{salidas_internas}). It is in a way, a way of renaming the neuron output.
+
+Keep in mind that the neuron still needs its output to go somewhere, so if you decide to use variables as (only) neuron outputs, these variables have to be used so that the neuron's result goes to, at minus, another neuron (or an output from the output layer).
+
+Variables can be used more than once by reassigning them more values, as long as these values   are not overwritten in the same layer, invalidating the connection of two neurons.
+
+Below is a basic example of using variables to connect ``N1'' and ``N2''.
+\begin{codebox}
+...
+C1 [
+	N1{ input: [...], output: [OutputOfN1] },
+	...
+],
+C2 [
+	N2{ input: [OutputOfN1: 0.5, ...], output: [...] },
+	...
+]
+...
+\end{codebox}
+
+\section{Instructions}
+\subsection{Input variables} \label{entradas}
+To declare an input variable and assign it a value, enter the name of the variable, an equal symbol and the value.
+
+\begin{codebox}
+Input = 3.14
+\end{codebox}
+
+In that code snippet, $3.14$ has been assigned to the input variable ``Input''.
+
+If at any point in the program you want to change the value of the input variable, you can assign it in the same way.
+
+\subsection{Output selection}
+
+Before executing a neuron network, we have the option of selecting outputs that we want to return in the next execution.
+
+If no output is selected, all outputs on the network (output layer) with the names given to them will be automatically selected.
+
+To select a variable as output, write a `greater than' symbol followed by the name of the variable.
+
+\begin{codebox}
+> Output
+\end{codebox}
+
+In this code fragment, the output ``Output'' is selected so that its value is returned in the next execution that is carried out.
+
+You can select as many outputs as you want. If a name is not defined, \texttt{None} will be returned.
+
+\subsubsection{Internal outputs and elements as outputs} \label{salidas_internas}
+Internal variables of the network can also be selected as output, this includes both variables that are used to connect neurons and variables that are simply declared in \texttt{output} to assign the result to them.
+
+Any element can also be selected for output by using the name of an element instead of a variable. The difference is that selecting items shows a basic explanation of the calculation that is performed. If it is a neuron the calculation of the neuron is displayed. If it is a network or a layer, the calculations of all the output neurons of the element are shown.
+
+These ``internal outputs'' to debug a neural network that we suspect is giving some wrong value because we have made a mistake when defining the network.
+
+\subsubsection{Special output ``all''} \label{all}
+You can also select ``all'' as the output. Selecting it will print the results of all neurons as they are calculated. This does not influence the rest of the selected outputs.
+
+\subsection{Running a network}
+To execute a network, write an arrow with a dash and a `greater than' symbol (\texttt{->}) followed by the name of the network to be executed.
+
+\begin{codebox}
+...
+-> R
+\end{codebox}
+
+In that fragment the network ``R'' defined in the same program is executed.
+
+The network will take the input variables that have previously been assigned and will print the selected outputs on the screen. Once finished, all exits will be unmarked.
+
+\section{Run a program}
+An NN program is executed through script \texttt{nn} as follows:
+
+\hspace{2cm} \texttt{nn [-h] [-i input\_file] [-I input] [-a] file}
+
+Being \texttt{file} the path to the file to be executed.
+In addition to the help option (\texttt{-h}) there are 3 other options that can be useful when running programs.
+\begin{itemize}
+\item \texttt{-i}: Along with a file in which only variables are defined, input variables can be passed to the program and therefore separated from the definition of the neural network.
+
+\item \texttt{-I}: Along with an input variable declaration, allows input variables to be passed to the program directly as an option when running.
+
+\item \texttt{-a}: If present, the special output ``all'' (\ref{all}) will be activated during the entire program.
+\end{itemize}
+
+The variables that are passed in this way, either with a file or with the command line, will overwrite those of the program (during the entire execution) if they have the same name.
+
+\end{document}
+

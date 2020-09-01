@@ -1,0 +1,51 @@
+R (
+	L1 [
+		N11 {
+			input: [ValueA: 1],
+			output: [N21, N22, N23],
+			bias: 0,
+			activation: identity
+		},
+		N12 {
+			input: [ValueB: 1],
+			output: [N22, N23],
+			bias: 0.25
+		}
+	],
+	L2 [
+		N21 {
+			input: [N11: 0.5],
+			output: [N3],
+			activation: binary
+		},
+		N22 {
+			input: [N11: 0.7, N12: 0.14],
+			output: [N3],
+			bias: 0.28,
+			activation: sigmoid
+		},
+		N23 {
+			input: [N11: 1, N12: 1],
+			output: [N3],
+			activation: identity,
+			bias: 0
+		}
+	],
+	L3 [
+		N3 {
+			input: [N21: 0.333, N22: 0.333, N23: 0.33],
+			activation: identity,
+			bias: 0.1,
+			output: [Output]
+		}
+	]
+)
+
+ValueA=3
+ValueB=6
+
+> all
+> L2
+> Output
+
+-> R

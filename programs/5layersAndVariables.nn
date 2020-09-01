@@ -1,0 +1,87 @@
+R (
+	L1 [
+		L1N1 {
+			input: [I1: 1],
+			output: [SL1N1]
+		},
+		L1N2 {
+			input: [I2: 1],
+			output: [SL1N2]
+		},
+		L1N3 {
+			input: [I3: 1],
+			output: [SL1N3]
+		}
+	],
+	L2 [
+		L2N1 {
+			input: [SL1N1: 2.3],
+			output: [L3N1],
+			bias: -0.314,
+			activation: sigmoid
+		},
+		L2N2 {
+			input: [SL1N1: 3, SL1N2: 0.75, SL1N3: -4.25],
+			output: [L3N2],
+			activation: identity,
+			bias: 3.14
+		},
+		L2N3 {
+			input: [SL1N1: 1.5, SL1N2: -2, SL1N3: 5e-1],
+			output: [L3N1],
+			activation: binary
+		},
+		L2N4 {
+			input: [SL1N1: 1, SL1N3: -1],
+			output: [L3N2],
+			activation: binary,
+			bias: 0
+		}
+	],
+	L3 [
+		L3N1 {
+			input: [L2N1: 0.5, L2N3: 0.5],
+			output: [SL3N1],
+			bias: -35E-2
+		},
+		L3N2 {
+			input: [L2N2: 2.1, L2N4: 1.2],
+			output: [SL3N2],
+			activation: sigmoid,
+			bias: -5.1
+		}
+	],
+	L4 [
+		L4N1 {
+			input: [SL3N1: 1],
+			output: [L5N]
+		},
+		L4N2 {
+			input: [SL3N1: 0.5, SL3N2: 0.5],
+			output: [L5N],
+			activation: sigmoid,
+			bias: 10
+		},
+		L4N3 {
+			input: [SL3N2: 1],
+			output: [L5N]
+		}
+	],
+	L5 [
+		L5N {
+			input: [L4N1: 0.25, L4N2: 0.5, L4N3: 0.25],
+			output: [S],
+			bias: 0.33,
+			activation: sigmoid
+		}
+	]
+)
+
+I1=3
+I2=1
+I3=4
+
+> all
+> L5
+> S
+-> R

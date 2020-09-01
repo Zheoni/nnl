@@ -1,0 +1,30 @@
+R (
+	R1 (
+		L11 [
+			N111 { input: [I1: 1], output: [N121] },
+			N112 { input: [I2: 1], output: [N121, N122] },
+			N113 { input: [I3: 1], output: [N122] }
+		],
+		L12 [
+			N121 { input: [N111: 0.5, N112: 0.5], output: [N211] },
+			N122 { input: [N112: 0.5, N113: 0.5], output: [N212] }
+		]
+	),
+	R2 (
+		L21 [
+			N211 { input: [N121: 1], output: [N221, N222, N223] },
+			N212 { input: [N122: 1], output: [N221, N222, N223] }
+		],
+		L22 [
+			N221 { input: [N211: 0.5, N212: 0.5], output: [S1] },
+			N222 { input: [N211: 0.5, N212: 0.5], output: [S2] },
+			N223 { input: [N211: 0.5, N212: 0.5], output: [S3] }
+		]
+	)
+)
+> R
+I1=10
+I2=20
+I3=30
+> all
+-> R

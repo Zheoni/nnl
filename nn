@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+import nnl.run as run
+from nnl.lexer import name_re, number_re
+from sys import argv, stderr
+import argparse
+import re
+import os
+from typing import Iterable
+
+
+def parse_inputs(inputs_iterable: Iterable) -> dict:
+    input_re = re.compile(f'^({name_re})=({number_re})$')
+
+    inputs = {}
+
+    for ipt in inputs_iterable:
+        ipt = ipt.strip('\n')
+        match = input_re.fullmatch(ipt)
+        if match:
+            name = match[1]
+            number = float(match[2])
+            inputs[name] = number
+        else:
+            raise ValueError(f'Input "{ipt}" has the incorrect format.s')
+
+    return inputs
+
+
+def load_input_files(filenames: list) -> dict:
+    line_re = re.compile(f'^({name_re})=({number_re})$')
+
+    inputs = {}
+
+    for filename in filenames:
+        try:
+            with open(filename) as file:
+                inputs.update(parse_inputs(file))
+        except OSError:
+            print(f'Cannot open file {filename}', file=stderr)
+        except ValueError:
+            print(
+                f'Input file "{filename}" has an incorrect format', file=stderr)
+        except Exception as e:
+            print(f'Error: {e}', file=stderr)
+
+    return inputs
+
+
+parser = argparse.ArgumentParser(description='Run Neural Network (.nn) files.')
+parser.add_argument('file', type=str,
+                    help='Path to the file that will be executed.')
+parser.add_argument('-i', '--input-file', action='append', type=str, required=False,
+                    help='File(s) to load inputs from. Each line is treated as an input of the form "NAME=VALUE".', metavar='input_file', dest='input_files')
+parser.add_argument('-I', '--input', action='append', type=str, required=False,
+                    help='Set input(s) of the form "NAME=VALUE".', metavar='input', dest='inputs')
+parser.add_argument('-a', '--all', action='store_true',
+                    help='Show all neuron outputs regardless of whether the program has the instructions to do so.', required=False)
+
+args = parser.parse_args()
+
+inputs = {}
+if args.input_files:
+    inputs.update(load_input_files(args.input_files))
+if args.inputs:
+    inputs.update(parse_inputs(args.inputs))
+
+run.run_file(args.file, inputs=inputs, show_all=args.all)

@@ -1,0 +1,52 @@
+R (
+	L1 [
+		R1 (
+			L11 [
+				N1 {
+					input: [I1: 1],
+					output: [OutputR1]
+				},
+				N2 {
+					input: [I2: 1],
+					output: [OutputR1]
+				}
+			],
+			L12 [
+				OutputR1 {
+					input: [N1: 0.5, N2: 0.5],
+					output: [NSpecial]
+				}
+			]
+		),
+		R2 (
+			L21 [
+				N4 {
+					input: [I1: 1],
+					output: [OutputR2]
+				},
+				N5 {
+					input: [I2: 1],
+					output: [OutputR2]
+				}
+			],
+			L22 [
+				OutputR2 {
+					input: [N4: 1.2, N5: 0.14],
+					output: [NSpecial]
+				}
+			]
+		)
+	],
+	L2 [
+		NSpecial {
+			input: [OutputR1: 0.3, OutputR2: 0.5],
+			bias: -0.1,
+			output: [S]
+		}
+	]
+)
+
+I1=4
+I2=5
+
+->R
