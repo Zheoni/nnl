@@ -2,7 +2,7 @@
 
 ## What is this
 
-Language to describe and execute neural networks. Useful for learning, it is not meant to be fast. It is part of a college assignment to learn about grammars.
+Language to describe and run neural networks. Useful for learning, it is not meant to be fast. It is part of a college assignment to learn about grammars.
 
 ## How to use it
 
@@ -12,4 +12,4 @@ There is a manual that explains all the features and syntax of the language. The
 
 There are examples in the `programs` directory.
 
-The `nnl` directory is a python package that can be used to embed the language in other project, the `nn` executable is just a front end for the package.
+The `nnl` directory is a python package that can be used to embed the language in other project. The `nn` executable is just a front end for the package that allows the user to run neural networks files with some options.
